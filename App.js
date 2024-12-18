@@ -1,3 +1,6 @@
+import React from "react";
+import ReactDOM from 'react-dom/client'
+
 // const header = React.createElement('h1', {id: 'heading', xyz: "abc"}, "Hello world namaste react !");
 
 // console.log(header); // Object
@@ -7,11 +10,12 @@
 
 // root.render(header)
 
-<div id="parent">
+{/* <div id="parent">
     <div id="child">
         <h1>I am an h1 tag</h1>
     </div>
-</div>
+</div> */}
+
 
 // const parent = React.createElement('div', {id: "parent"}, React.createElement("div", {id: "child"}, React.createElement('h1', {}, "I am an h1 tag")));
 
