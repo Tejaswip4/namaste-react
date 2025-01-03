@@ -1,81 +1,64 @@
 import RestaurantCard from "./RestaurantCard";
 import resList from "../utils/mockData";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import Shimmer from "./Shimmer"
 
 
 const Body = () => {
 
     // Local state variable - super powerful variable
-    const [listOfRestaurants, setListOfRestaurants] = useState(resList)
+    const [listOfRestaurants, setListOfRestaurants] = useState([]);
+    const [filteredRestaurant, setFilteredRestaurant] = useState([]);
 
-    // Normal JS variable
-    let listOfRestaurantsJS = [
-        {
-            "info": {
-            "id": "698364",
-            "name": "McDonald's",
-            "cloudinaryImageId": "RX_THUMBNAIL/IMAGES/VENDOR/2024/9/18/118d064e-20b1-4385-bd1d-efa291e1fe49_698364.jpg",
-            "locality": "Perumbakkam",
-            "areaName": "Sekaran Mall",
-            "costForTwo": "₹400 for two",
-            "cuisines": [
-              "Burgers",
-              "Beverages",
-              "Cafe",
-              "Desserts"
-            ],
-            "avgRating": 3.8,
-          },
-        },
-        {
-            "info": {
-            "id": "612571",
-            "name": "KFC",
-            "cloudinaryImageId": "RX_THUMBNAIL/IMAGES/VENDOR/2024/12/9/16ce627a-d16b-440d-998f-2e3cc829db06_612571.JPG",
-            "locality": "Perumbakkam",
-            "areaName": "Sekaran Mall",
-            "costForTwo": "₹400 for two",
-            "cuisines": [
-              "Burgers",
-              "Beverages",
-              "Cafe",
-              "Desserts"
-            ],
-            "avgRating": 4.1,
-          },
-        },
-        {
-            "info": {
-            "id": "104680",
-            "name": "Domino's Pizza",
-            "cloudinaryImageId": "RX_THUMBNAIL/IMAGES/VENDOR/2024/11/29/1575ad27-b88a-4918-aeae-8192ab238a34_104680.jpg",
-            "locality": "Perumbakkam",
-            "areaName": "Sekaran Mall",
-            "costForTwo": "₹400 for two",
-            "cuisines": [
-              "Burgers",
-              "Beverages",
-              "Cafe",
-              "Desserts"
-            ],
-            "avgRating": 4.5
-          },
-        },
-   ]
+    const [searchText, setSearchText] = useState('')
+    // console.log("Body rendering");
+    
 
-    return (
+    useEffect(() => {
+      fetchData();
+      // console.log("useEffect will reflect");
+    }, []);
+
+ const fetchData = async () => {
+  const data = await fetch('https://www.swiggy.com/dapi/restaurants/list/v5?lat=12.89960&lng=80.22090&is-seo-homepage-enabled=true&page_type=DESKTOP_WEB_LISTING');
+
+  const json = await data.json();
+
+  console.log(json);
+
+  setListOfRestaurants(json.data.cards[4].card.card.gridElements.infoWithStyle.restaurants)
+  setFilteredRestaurant(json.data.cards[4].card.card.gridElements.infoWithStyle.restaurants)
+  
+ }
+  
+
+    return listOfRestaurants.length === 0 ? <Shimmer /> : (
         <div className="body">
             <div className="filter">
+
+              <div className="search">
+                <input type="text" className="search-box" value={searchText} onChange={(e) => {setSearchText(e.target.value)}} />
+
+                <button onClick={() => {
+                  // console.log(searchText)
+                  const filteredRestaurant = listOfRestaurants.filter((res) => 
+                    res.info.name.toLowerCase().includes(searchText.toLowerCase())
+                  );
+                  setFilteredRestaurant(filteredRestaurant)
+                }}>Search</button>
+
+              </div>
+
                 <button className="filter-btn" onClick={() => {
-                    const filteredList = listOfRestaurants.filter((res) => res.info.avgRating >= 4)
+                    const filteredList = listOfRestaurants.filter((res) => res.info.avgRating >= 4.5)
                     // console.log(listOfRestaurants);
                     setListOfRestaurants(filteredList)
                 }}>Top rated restaurants</button>
             </div>
 
             <div className="res-container">
-                {listOfRestaurants.map((res) => <RestaurantCard key={res.info.id} resData={res} />)}
+                {filteredRestaurant.map((res) => <RestaurantCard key={res.info.id} resData={res} />)}
 
 
                 {/* <RestaurantCard resData={resList[0]} />
